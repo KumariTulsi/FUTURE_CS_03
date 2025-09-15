@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Secure File Share</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <h1>🔐 Secure File Share</h1>
+      <p class="muted">Encrypted uploads (AES-GCM). For demo / learning only.</p>
+    </header>
+
+    {% if msg %}
+      <div class="toast" id="toast">{{ msg }}</div>
+    {% endif %}
+
+    <section class="card">
+      <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
+        <label class="filebox">
+          <input type="file" name="file" required />
+          <span>Select file</span>
+        </label>
+        <button class="primary" type="submit">⬆ Upload & Encrypt</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Available Files</h2>
+      {% if files %}
+        <ul class="file-list">
+          {% for f in files %}
+            <li>
+              <div class="left">
+                <strong>{{ f }}</strong>
+                <small class="muted">{{ f.split('.')[-1] if '.' in f else 'file' }}</small>
+              </div>
+              <div class="right">
+                <a class="btn" href="/download/{{ f }}">⬇ Download</a>
+                <form style="display:inline" action="/delete/{{ f }}" method="POST" onsubmit="return confirmDelete('{{ f }}')">
+                  <button class="btn danger" type="submit">🗑 Delete</button>
+                </form>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="muted">No files uploaded yet.</p>
+      {% endif %}
+    </section>
+
+    <footer class="muted small">Local demo • Do not use in production. Keep key.key private (chmod 600).</footer>
+  </main>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
